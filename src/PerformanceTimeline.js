@@ -28,11 +28,14 @@ const getPerformanceObject = async (filters) => {
   const data = await fetch("string.json").then((res) => res.json());
   let retList = [];
   let counter = 1;
+  filters=filters.map((filter) => filter.name)
   data.forEach((entry) => {
     if (
       !entry.name.endsWith("duration") &&
       !entry.name.startsWith("@grammarly") &&
-      filters.map((filter) => filter.name).includes(entry.entryType)
+      filters.includes(entry.entryType)&&
+        ((filters.includes('frog calls'))||
+        (!filters.includes('frog calls')&&!entry.name.includes('frog')))
     ) {
       const retEntry = {
         displayName: entry.name,

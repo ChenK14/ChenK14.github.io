@@ -13,6 +13,7 @@ const App = () => {
     { name: "paint", id: 4 },
     { name: "navigation", id: 5 },
     { name: "first-input", id: 6 },
+    { name: "frog calls", id: 7 },
   ];
   const [filters, setFilters] = useState(types);
 
