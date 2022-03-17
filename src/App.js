@@ -6,12 +6,10 @@ import { useState } from "react";
 
 const App = () => {
 
-  const params = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
+  window.addEventListener("message", (event) => {
+    console.log(event.data)
   });
-// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-  const entries= JSON.parse(decodeURI(getCookie(params.data)))
-  console.log(entries)
+
   const google = useGoogleCharts();
   const types = [
     { name: "resource", id: 1 },
