@@ -10,8 +10,8 @@ const App = () => {
     get: (searchParams, prop) => searchParams.get(prop),
   });
 // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-  const entries= JSON.parse(decodeURI(params.data))
-
+  const entries= JSON.parse(decodeURI(getCookie(params.data)))
+  console.log(entries)
   const google = useGoogleCharts();
   const types = [
     { name: "resource", id: 1 },
@@ -49,3 +49,20 @@ const App = () => {
 };
 
 export default App;
+
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
