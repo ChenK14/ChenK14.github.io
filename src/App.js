@@ -41,7 +41,7 @@ const App = () => {
         showCheckbox={true}
         closeOnSelect={true}
       />
-      <PerformanceTimeline google={google} filters={filters} entries={{entries}} />
+      <PerformanceTimeline google={google} filters={filters} />
     </>
   );
 };
