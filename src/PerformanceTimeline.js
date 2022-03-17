@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
-function PerformanceTimeline({ google, filters }) {
+function PerformanceTimeline({ google, filters,entries }) {
+  console.log(localStorage.getItem(entries))
   const [timeline, setTimeline] = useState(null);
   const [currentFilters, setCurrentFilters] = useState(filters);
   useEffect(() => {

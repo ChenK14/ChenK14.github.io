@@ -5,6 +5,13 @@ import { Multiselect } from "multiselect-react-dropdown";
 import { useState } from "react";
 
 const App = () => {
+
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  });
+// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+  const entries= JSON.parse(decodeURI(params.data))
+
   const google = useGoogleCharts();
   const types = [
     { name: "resource", id: 1 },
@@ -36,7 +43,7 @@ const App = () => {
         showCheckbox={true}
         closeOnSelect={true}
       />
-      <PerformanceTimeline google={google} filters={filters} />
+      <PerformanceTimeline google={google} filters={filters} entries={{entries}} />
     </>
   );
 };
