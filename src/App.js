@@ -7,7 +7,7 @@ import { useState } from "react";
 const App = () => {
 
   window.addEventListener("message", (event) => {
-    console.log(event.data)
+    console.log(event)
   });
 
   const google = useGoogleCharts();
