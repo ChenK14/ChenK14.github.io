@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 
-function PerformanceTimeline({ google, filters }) {
+function PerformanceTimeline({ google, filters, entries }) {
   const [timeline, setTimeline] = useState(null);
   const [currentFilters, setCurrentFilters] = useState(filters);
   useEffect(() => {
     if (google && (!timeline|| currentFilters !== filters)) {
       google.charts.load("current", { packages: ["timeline"] });
       google.charts.setOnLoadCallback(() =>
-        drawChart(filters, google, setTimeline)
+        drawChart(filters, google, setTimeline,entries)
       )
       setCurrentFilters(filters)
     }
-  }, [currentFilters, filters, google, timeline]);
+  }, [currentFilters, entries, filters, google, timeline]);
 
   return (
     <div>
@@ -24,8 +24,10 @@ function PerformanceTimeline({ google, filters }) {
 
 export default PerformanceTimeline;
 
-const getPerformanceObject = async (filters) => {
-  const data = await fetch("string.json").then((res) => res.json());
+const getPerformanceObject = async (filters,entries) => {
+  const data = entries
+
+  //const data = await fetch("string.json").then((res) => res.json());
   let retList = [];
   let counter = 1;
   filters=filters.map((filter) => filter.name)
@@ -79,12 +81,12 @@ const getPerformanceObject = async (filters) => {
   return retList;
 };
 
-const drawChart = async (filters, google, setTimeline) => {
+const drawChart = async (filters, google, setTimeline,entries) => {
   const container = document.getElementById("timeline");
   container.style.height = "8000px";
   const newChart = new google.visualization.Timeline(container);
   const dataTable = new google.visualization.DataTable();
-  const data = await getPerformanceObject(filters);
+  const data = await getPerformanceObject(filters,entries);
   dataTable.addColumn({ type: "string", id: "row label" });
   dataTable.addColumn({ type: "string", id: "bar label" });
   dataTable.addColumn({ type: "string", role: "tooltip" });

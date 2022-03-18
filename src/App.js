@@ -2,9 +2,11 @@ import "./App.css";
 import useGoogleCharts from "./useGoogleCharts";
 import PerformanceTimeline from "./PerformanceTimeline";
 import { Multiselect } from "multiselect-react-dropdown";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const App = () => {
+
+  const [entries, setEntries]= useState(null)
 
   window.addEventListener("message", (event) => {
     console.log(event)
@@ -29,19 +31,36 @@ const App = () => {
     setFilters(selectedList);
   }
 
+  const foundFile = ()=>{
+    const fileSelector = document.getElementById('file-selector');
+    fileSelector.addEventListener('change', (event) => {
+      const fr = new FileReader()
+      fr.onload=()=>{
+        setEntries(JSON.parse(fr.result))
+      }
+      fr.readAsText(event.target.files[0]);
+    });
+  }
+
+
   return (
     <>
-      <Multiselect
-        options={types} // Options to display in the dropdown
-        selectedValues={filters} // Preselected value to persist in dropdown
-        onSelect={onSelect} // Function will trigger on select event
-        onRemove={onRemove} // Function will trigger on remove event
-        displayValue="name" // Property name to display in the dropdown options
-        placeholder='Please select filter'
-        showCheckbox={true}
-        closeOnSelect={true}
-      />
-      <PerformanceTimeline google={google} filters={filters} />
+      <input type='file' id='file-selector' onInput={foundFile}/>
+      {entries &&
+        <Fragment>
+          <Multiselect
+            options={types} // Options to display in the dropdown
+            selectedValues={filters} // Preselected value to persist in dropdown
+            onSelect={onSelect} // Function will trigger on select event
+            onRemove={onRemove} // Function will trigger on remove event
+            displayValue="name" // Property name to display in the dropdown options
+            placeholder='Please select filter'
+            showCheckbox={true}
+            closeOnSelect={true}
+          />
+          <PerformanceTimeline google={google} filters={filters} entries={entries}/>
+        </Fragment>
+      }
     </>
   );
 };
