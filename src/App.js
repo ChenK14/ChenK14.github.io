@@ -45,7 +45,7 @@ const App = () => {
 
   return (
     <>
-      <input type='file' id='file-selector' onInput={foundFile}/>
+      <input className='basic_components' type='file' id='file-selector' onInput={foundFile}/>
       {entries &&
         <Fragment>
           <Multiselect
@@ -57,10 +57,12 @@ const App = () => {
             placeholder='Please select filter'
             showCheckbox={true}
             closeOnSelect={true}
+            className='basic_components'
           />
           <PerformanceTimeline google={google} filters={filters} entries={entries}/>
         </Fragment>
       }
+      {!entries && <div className='waiting_text'> Waiting for Input</div>}
     </>
   );
 };

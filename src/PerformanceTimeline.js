@@ -17,7 +17,7 @@ function PerformanceTimeline({ google, filters, entries }) {
   return (
     <div>
       {!google && <Spinner />}
-      <div id="timeline" className={!google ? "d-none" : ""} />
+      <div id="timeline"  />
     </div>
   );
 }
