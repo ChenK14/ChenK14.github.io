@@ -4,13 +4,9 @@ import PerformanceTimeline from "./PerformanceTimeline";
 import { Multiselect } from "multiselect-react-dropdown";
 import { Fragment, useState } from "react";
 
-const App = () => {
 
-  const [entries, setEntries]= useState(null)
 
-  window.addEventListener("message", (event) => {
-    console.log(event)
-  });
+const App = ({ entries }) => {
 
   const google = useGoogleCharts();
   const types = [
@@ -31,22 +27,9 @@ const App = () => {
     setFilters(selectedList);
   }
 
-  const foundFile = ()=>{
-    const fileSelector = document.getElementById('file-selector');
-    fileSelector.addEventListener('change', (event) => {
-      const fr = new FileReader()
-      fr.onload=()=>{
-        setEntries(JSON.parse(fr.result))
-      }
-      fr.readAsText(event.target.files[0]);
-    });
-  }
-
 
   return (
     <>
-      <input className='basic_components' type='file' id='file-selector' onInput={foundFile}/>
-      {entries &&
         <Fragment>
           <Multiselect
             options={types} // Options to display in the dropdown
@@ -61,8 +44,6 @@ const App = () => {
           />
           <PerformanceTimeline google={google} filters={filters} entries={entries}/>
         </Fragment>
-      }
-      {!entries && <div className='waiting_text'> Waiting for Input</div>}
     </>
   );
 };
