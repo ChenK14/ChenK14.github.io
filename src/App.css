@@ -11,4 +11,11 @@
   padding: 10px 10px;
   font-weight: bold;
 }
+.error{
+  color: red;
+  text-align: center;
+  font-size: x-large;
+  padding: 10px 10px;
+  font-weight: bold;
+}
 

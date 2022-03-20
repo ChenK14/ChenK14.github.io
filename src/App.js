@@ -18,7 +18,7 @@ const App = ({ entries }) => {
     { name: "first-input", id: 6 },
     { name: "frog calls", id: 7 },
   ];
-  const [filters, setFilters] = useState(types);
+  const [filters, setFilters] = useState(types.filter(filter=>filter.id!==7));
 
   function onSelect(selectedList, _selectedItem) {
     setFilters(selectedList);
