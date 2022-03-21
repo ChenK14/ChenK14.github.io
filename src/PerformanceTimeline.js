@@ -27,7 +27,6 @@ export default PerformanceTimeline;
 const getPerformanceObject = async (filters,entries) => {
   const data = entries
   let retList = [];
-  let counter = 1;
   filters=filters.map((filter) => filter.name)
   data.forEach((entry) => {
     if (
