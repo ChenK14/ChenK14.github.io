@@ -83,7 +83,6 @@ const getPerformanceObject = async (filters,entries) => {
 
 const drawChart = async (filters, google, setTimeline,entries) => {
   const container = document.getElementById("timeline");
-  container.style.height = "3500px";
   const newChart = new google.visualization.Timeline(container);
   const dataTable = new google.visualization.DataTable();
   const data = await getPerformanceObject(filters,entries);
@@ -116,8 +115,9 @@ const drawChart = async (filters, google, setTimeline,entries) => {
     height: "100%",
     timeline: { colorByRowLabel: true, groupByRowLabel: false },
   };
-
+  container.style.height = `${dataTable.getNumberOfRows() * 15+40}px`;
   newChart.draw(dataTable, options);
+  //container.style.height = dataTable.getNumberOfRows() * 15+40;
   setTimeline(newChart);
 };
 
