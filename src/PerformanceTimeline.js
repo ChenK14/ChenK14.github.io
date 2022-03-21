@@ -26,13 +26,14 @@ export default PerformanceTimeline;
 
 const getPerformanceObject = async (filters,entries) => {
   const data = entries
-
-  //const data = await fetch("string.json").then((res) => res.json());
   let retList = [];
   let counter = 1;
   filters=filters.map((filter) => filter.name)
   data.forEach((entry) => {
     if (
+      !entry.name.includes("pointerdown")&&
+      !entry.name.includes("thunderbolt interaction")&&
+      !entry.name.includes("phase:")&&
       !entry.name.endsWith("duration") &&
       !entry.name.startsWith("@grammarly") &&
       filters.includes(entry.entryType)&&
@@ -72,7 +73,7 @@ const getPerformanceObject = async (filters,entries) => {
       });
       if (!found) {
         retEntry.displayName = entry.name.startsWith("https://")
-          ? `fetch call ${counter++}`
+          ? getDisplayNameOfLoadedResource(entry.name)
           : entry.name.slice(nameStartIndex, nameEndIndex + 1);
         retList.push(retEntry);
       }
@@ -83,7 +84,7 @@ const getPerformanceObject = async (filters,entries) => {
 
 const drawChart = async (filters, google, setTimeline,entries) => {
   const container = document.getElementById("timeline");
-  container.style.height = "8000px";
+  container.style.height = "3500px";
   const newChart = new google.visualization.Timeline(container);
   const dataTable = new google.visualization.DataTable();
   const data = await getPerformanceObject(filters,entries);
@@ -120,3 +121,20 @@ const drawChart = async (filters, google, setTimeline,entries) => {
   newChart.draw(dataTable, options);
   setTimeline(newChart);
 };
+
+
+
+const getDisplayNameOfLoadedResource=(name)=>{
+  if(name.includes('siteassets')){
+    return 'Site Assets'
+  }
+  else if(name.endsWith('.js') || name.endsWith('dynamicmodel') ){
+    let fileSuffixIndex = -1;
+    for (let i = 0; i < name.length; i++)
+      if (name[i] === '/')
+        fileSuffixIndex = i;
+
+    return name.slice(fileSuffixIndex+1,name.length)
+  }
+return 'fetch call'
+}
