@@ -1,8 +1,7 @@
 .basic_components{
-  text-align: center;
   font-size: large;
-  padding: 10px 10px;
-  font-weight: bold;
+  padding: 10px;
+  z-index: 2;
 }
 
 .waiting_text{
@@ -29,7 +28,7 @@
   background: red;
   width: 2px;
   height: 95%;
-  z-index: 10;
+  z-index: 1;
 }
 .timeline{
   height: 100%;
@@ -44,7 +43,7 @@
   padding: 5px;
 }
 .typeDescription{
-  padding: 0px 10px;
+  padding: 0 10px;
 }
 
 
@@ -64,17 +63,16 @@ input[type='checkbox'] {
 
 .lbl-toggle {
   display: block;
-
   font-weight: bold;
   font-family: monospace;
   font-size: 1.2rem;
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
 
-  padding: 1rem;
+  padding: 1rem 1rem;
 
-  color: #dcc590;
-  background: #113972;
+  color:black;
+  background: lightgray;
 
   cursor: pointer;
 

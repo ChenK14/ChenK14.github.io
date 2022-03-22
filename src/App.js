@@ -41,7 +41,6 @@ const App = ({ entries }) => {
 
   return (
     <>
-        <Fragment>
           <CollapsableSection types={types}/>
           <Multiselect
             options={types} // Options to display in the dropdown
@@ -58,7 +57,6 @@ const App = ({ entries }) => {
               <div className='line' id='line'/>
             <PerformanceTimeline className='timeline' google={google} filters={filters} entries={entries}/>
           </div>
-        </Fragment>
     </>
   );
 };

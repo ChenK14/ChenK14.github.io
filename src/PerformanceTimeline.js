@@ -41,7 +41,7 @@ const getPerformanceObject = async (filters,entries) => {
     ) {
       const retEntry = {
         displayName: entry.name,
-        type: entry.entryType,
+        type: entry.entryType==='resource'?entry.initiatorType:entry.entryType,
         name: entry.name,
         starts: entry.startTime,
         ends: entry.startTime + entry.duration,
@@ -115,7 +115,7 @@ const drawChart = async (filters, google, setTimeline,entries) => {
     height: "100%",
     timeline: { colorByRowLabel: true, groupByRowLabel: false },
   };
-  container.style.height = `${dataTable.getNumberOfRows() * 15+40}px`;
+  container.style.height = `${dataTable.getNumberOfRows() * 15+30}px`;
   newChart.draw(dataTable, options);
   //container.style.height = dataTable.getNumberOfRows() * 15+40;
   setTimeline(newChart);
@@ -125,7 +125,9 @@ const drawChart = async (filters, google, setTimeline,entries) => {
 
 const getDisplayNameOfLoadedResource=(name)=>{
   if(name.includes('siteassets')){
-    return 'Site Assets'
+    const start= name.search('module=')+7
+    const end=name.slice(start).search('&') + start
+    return `Site Assets (${name.slice(start, end)})`
   }
   else if(name.endsWith('.js') || name.endsWith('dynamicmodel') ){
     let fileSuffixIndex = -1;

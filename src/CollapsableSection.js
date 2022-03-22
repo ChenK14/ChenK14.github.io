@@ -5,7 +5,7 @@ const CollapsableSection=({types})=>{
 return(
   <div className="wrap-collabsible">
     <input id="collapsible" className="toggle" type="checkbox"/>
-      <label htmlFor="collapsible" className="lbl-toggle">Types Info</label>
+      <label htmlFor="collapsible" className="lbl-toggle">Legend</label>
       <div className="collapsible-content">
         <div className="content-inner">
           <span>
