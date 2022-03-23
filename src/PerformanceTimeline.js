@@ -102,11 +102,10 @@ const drawChart = async (filters, google, setTimeline,entries) => {
     ]);
   }
   const options = {
-    width: "100%",
-    height: "100%",
     timeline: { colorByRowLabel: true, groupByRowLabel: false },
   };
-  container.style.height = `${dataTable.getNumberOfRows() * 15+30}px`;
+  console.log(dataTable.getNumberOfRows())
+  container.style.height = `${dataTable.getNumberOfRows() * 43.2 }px`;
   newChart.draw(dataTable, options);
   //container.style.height = dataTable.getNumberOfRows() * 15+40;
   setTimeline(newChart);
