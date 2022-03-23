@@ -18,8 +18,9 @@ const App = ({ entries }) => {
     { name: "navigation", id: 5, description:'Representing the navigation call' },
     { name: "first-input", id: 6, description:''},
     { name: "frog calls", id: 7, description:'Representing a fetch call to a frog.wix domains, it is not shown by default since it doesnt affect the loading time' },
+    { name: "cloudflare", id: 8, description:'Representing a fetch call to a cloudflare domains, it is not shown by default since it doesnt affect the loading time' },
   ];
-  const [filters, setFilters] = useState(types.filter(filter=>filter.id!==7));
+  const [filters, setFilters] = useState(types.filter(filter=>filter.id!==7&&filter.id!==8));
 
   const onSelect = (selectedList, _selectedItem) => {
     setFilters(selectedList);

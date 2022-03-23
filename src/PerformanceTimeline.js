@@ -29,16 +29,7 @@ const getPerformanceObject = async (filters,entries) => {
   let retList = [];
   filters=filters.map((filter) => filter.name)
   data.forEach((entry) => {
-    if (
-      !entry.name.includes("pointerdown")&&
-      !entry.name.includes("thunderbolt interaction")&&
-      !entry.name.includes("phase:")&&
-      !entry.name.endsWith("duration") &&
-      !entry.name.startsWith("@grammarly") &&
-      filters.includes(entry.entryType)&&
-        ((filters.includes('frog calls'))||
-        (!filters.includes('frog calls')&&!entry.name.includes('frog')))
-    ) {
+    if (filterEntries(entry, filters)) {
       const retEntry = {
         displayName: entry.name,
         type: entry.entryType==='resource'?entry.initiatorType:entry.entryType,
@@ -138,4 +129,19 @@ const getDisplayNameOfLoadedResource=(name)=>{
     return name.slice(fileSuffixIndex+1,name.length)
   }
 return 'fetch call'
+}
+
+const filterEntries = (entry,filters)=>{
+  return (
+  !entry.name.includes("pointerdown")&&
+  !entry.name.includes("thunderbolt interaction")&&
+  !entry.name.includes("phase:")&&
+  !entry.name.endsWith("duration") &&
+  !entry.name.startsWith("@grammarly") &&
+  filters.includes(entry.entryType)&&
+  ((filters.includes('frog calls'))||
+    (!filters.includes('frog calls')&&!entry.name.includes('frog')))&&
+  ((filters.includes('cloudflare'))||
+    (!filters.includes('cloudflare')&&!entry.name.includes('cloudflare')))
+  )
 }
