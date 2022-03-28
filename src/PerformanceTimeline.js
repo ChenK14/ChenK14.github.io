@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
 
 function PerformanceTimeline({ google, filters, entries }) {
   const [timeline, setTimeline] = useState(null);
@@ -16,7 +15,7 @@ function PerformanceTimeline({ google, filters, entries }) {
 
   return (
     <div>
-      {!google && <Spinner />}
+      {!google}
       <div id="timeline" />
     </div>
   );
@@ -59,13 +58,14 @@ const getPerformanceObject = async (filters, entries) => {
 
       let found = false;
       retList.forEach((ret) => {
-        if (ret.name === retEntry.name && entry.entryType!=='resource') {
+        if (ret.name === retEntry.name && entry.entryType !== "resource") {
+          // The idea is to merge events that are of the * started and * ended type, resource isn't one of then
           ret.ends = entry.startTime + entry.duration;
           found = true;
         }
       });
       if (!found) {
-        retEntry.displayName = entry.name.startsWith("https://")
+        retEntry.displayName = entry.name.startsWith("http")
           ? getDisplayNameOfLoadedResource(entry.name)
           : entry.name.slice(nameStartIndex, nameEndIndex + 1);
         retList.push(retEntry);
@@ -115,7 +115,7 @@ const drawChart = async (filters, google, setTimeline, entries) => {
 };
 
 const getDisplayNameOfLoadedResource = (name) => {
-  if (name.includes("siteassets")) {
+  if (name.includes("siteassets.parastorage.com")) {
     const start = name.search("module=") + 7;
     const end = name.slice(start).search("&") + start;
     return `Site Assets (${name.slice(start, end)})`;
