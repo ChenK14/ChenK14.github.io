@@ -58,7 +58,7 @@ COLLAPSABLE CODE:
 }
 
 input[type='checkbox'] {
-  display: none;
+  display: inline;
 }
 
 .lbl-toggle {

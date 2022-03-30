@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 
-function PerformanceTimeline({ google, filters, entries }) {
+function PerformanceTimeline({ google, filters, entries, includeEventAfterThunderboltLoaded }) {
   const [timeline, setTimeline] = useState(null);
   const [currentFilters, setCurrentFilters] = useState(filters);
+  const [currentIncludeEventAfterThunderboltLoaded, setCurrentIncludeEventAfterThunderboltLoaded] = useState(includeEventAfterThunderboltLoaded);
   useEffect(() => {
-    if (google && (!timeline || currentFilters !== filters)) {
+    if (google && (!timeline || currentFilters !== filters||currentIncludeEventAfterThunderboltLoaded!==includeEventAfterThunderboltLoaded)) {
       google.charts.load("current", { packages: ["timeline"] });
       google.charts.setOnLoadCallback(() =>
-        drawChart(filters, google, setTimeline, entries)
+        drawChart(filters, google, setTimeline, entries,includeEventAfterThunderboltLoaded)
       );
+      setCurrentIncludeEventAfterThunderboltLoaded(includeEventAfterThunderboltLoaded)
       setCurrentFilters(filters);
     }
-  }, [currentFilters, entries, filters, google, timeline]);
+  }, [entries, filters, google, includeEventAfterThunderboltLoaded, timeline]);
 
   return (
     <div>
@@ -23,11 +25,17 @@ function PerformanceTimeline({ google, filters, entries }) {
 
 export default PerformanceTimeline;
 
-const getPerformanceObject = async (filters, entries) => {
+const getPerformanceObject = async (filters, entries,includeEventAfterThunderboltLoaded) => {
   const data = entries;
   let retList = [];
   filters = filters.map((filter) => filter.name);
-  data.forEach((entry) => {
+  let thunderboltLoadedTime=25000 //JUST A DEFAULT TIME, COULD BE ANYTHING LARGE ENOUGH
+  for(const entry of data ){
+
+    if(includeEventAfterThunderboltLoaded && thunderboltLoadedTime<entry.startTime){
+      continue
+    }
+
     if (filterEntries(entry, filters)) {
       const retEntry = {
         displayName: entry.name,
@@ -44,17 +52,17 @@ const getPerformanceObject = async (filters, entries) => {
       if (entry.name.startsWith("[fedops] ")) {
         nameStartIndex = 9;
       }
-      let nameEndIndex = entry.name.length - 1;
-      if (entry.name.includes("started")) {
-        nameEndIndex = entry.name.indexOf(" started");
+      const nameEndIndex = getNameEndingIndex(entry.name);
+
+      if(entry.name.endsWith('started')){
         retEntry.starts = entry.startTime;
         retEntry.ends = entry.startTime;
-      } else if (entry.name.includes("finished")) {
-        nameEndIndex = entry.name.indexOf(" finished");
-      } else if (entry.name.includes("ended")) {
-        nameEndIndex = entry.name.indexOf(" ended");
       }
       retEntry.name = entry.name.slice(nameStartIndex, nameEndIndex + 1);
+
+      if(retEntry.name==='thunderbolt app-loaded'){
+        thunderboltLoadedTime=retEntry.starts
+      }
 
       let found = false;
       retList.forEach((ret) => {
@@ -71,15 +79,27 @@ const getPerformanceObject = async (filters, entries) => {
         retList.push(retEntry);
       }
     }
-  });
+  }
   return retList;
 };
 
-const drawChart = async (filters, google, setTimeline, entries) => {
+const getNameEndingIndex=(name)=>{
+  if (name.endsWith("started")) {
+    return name.indexOf(" started");
+  } else if (name.endsWith("finished")) {
+    return name.indexOf(" finished");
+  } else if (name.endsWith("ended")) {
+    return name.indexOf(" ended");
+  }
+  return name.length-1
+}
+
+
+const drawChart = async (filters, google, setTimeline, entries,includeEventAfterThunderboltLoaded) => {
   const container = document.getElementById("timeline");
   const newChart = new google.visualization.Timeline(container);
   const dataTable = new google.visualization.DataTable();
-  const data = await getPerformanceObject(filters, entries);
+  const data = await getPerformanceObject(filters, entries,includeEventAfterThunderboltLoaded);
   dataTable.addColumn({ type: "string", id: "row label" });
   dataTable.addColumn({ type: "string", id: "bar label" });
   dataTable.addColumn({ type: "string", role: "tooltip" });
@@ -107,7 +127,6 @@ const drawChart = async (filters, google, setTimeline, entries) => {
   const options = {
     timeline: { colorByRowLabel: true, groupByRowLabel: false },
   };
-  console.log(dataTable.getNumberOfRows());
   container.style.height = `${dataTable.getNumberOfRows() * 43.2}px`;
   newChart.draw(dataTable, options);
   //container.style.height = dataTable.getNumberOfRows() * 15+40;
@@ -132,7 +151,7 @@ const getDisplayNameOfLoadedResource = (name) => {
 const filterEntries = (entry, filters) => {
   return (
     !entry.name.includes("pointerdown") &&
-    !entry.name.includes("thunderbolt interaction") &&
+    // !entry.name.includes("thunderbolt interaction") &&
     !entry.name.includes("phase:") &&
     !entry.name.endsWith("duration") &&
     !entry.name.startsWith("@grammarly") &&
