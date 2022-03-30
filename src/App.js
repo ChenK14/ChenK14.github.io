@@ -44,7 +44,7 @@ const App = ({ entries }) => {
   const [filters, setFilters] = useState(
     types.filter((filter) => filter.id !== 7 && filter.id !== 8)
   );
-  const [includeEventsAfterThunderboltLoaded, setIncludeEventsAfterThunderboltLoaded] = useState(false);
+  const [excludeEventsAfterThunderboltLoaded, setExcludeEventsAfterThunderboltLoaded] = useState(false);
 
   const onSelect = (selectedList, _selectedItem) => {
     setFilters(selectedList);
@@ -71,9 +71,9 @@ const App = ({ entries }) => {
         <input
           className='basic_components'
           type="checkbox"
-          onChange={(event) => setIncludeEventsAfterThunderboltLoaded(event.currentTarget.checked)}
-          checked={includeEventsAfterThunderboltLoaded}
-        /> Include Events After Thunderbolt Loaded
+          onChange={(event) => setExcludeEventsAfterThunderboltLoaded(event.currentTarget.checked)}
+          checked={excludeEventsAfterThunderboltLoaded}
+        /> Exclude Events After Thunderbolt Loaded
       </div>
       <Multiselect
         options={types} // Options to display in the dropdown
@@ -93,7 +93,7 @@ const App = ({ entries }) => {
           google={google}
           filters={filters}
           entries={entries}
-          includeEventAfterThunderboltLoaded={includeEventsAfterThunderboltLoaded}
+          excludeEventAfterThunderboltLoaded={excludeEventsAfterThunderboltLoaded}
         />
       </div>
     </>
