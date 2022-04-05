@@ -1,16 +1,38 @@
 import { useEffect, useState } from "react";
 
-function PerformanceTimeline({ google, filters, entries, excludeEventAfterThunderboltLoaded }) {
+function PerformanceTimeline({
+  google,
+  filters,
+  entries,
+  excludeEventAfterThunderboltLoaded,
+}) {
   const [timeline, setTimeline] = useState(null);
   const [currentFilters, setCurrentFilters] = useState(filters);
-  const [currentExcludeEventAfterThunderboltLoaded, setCurrentExcludeEventAfterThunderboltLoaded] = useState(excludeEventAfterThunderboltLoaded);
+  const [
+    currentExcludeEventAfterThunderboltLoaded,
+    setCurrentExcludeEventAfterThunderboltLoaded,
+  ] = useState(excludeEventAfterThunderboltLoaded);
   useEffect(() => {
-    if (google && (!timeline || currentFilters !== filters||currentExcludeEventAfterThunderboltLoaded!==excludeEventAfterThunderboltLoaded)) {
+    if (
+      google &&
+      (!timeline ||
+        currentFilters !== filters ||
+        currentExcludeEventAfterThunderboltLoaded !==
+          excludeEventAfterThunderboltLoaded)
+    ) {
       google.charts.load("current", { packages: ["timeline"] });
       google.charts.setOnLoadCallback(() =>
-        drawChart(filters, google, setTimeline, entries,excludeEventAfterThunderboltLoaded)
+        drawChart(
+          filters,
+          google,
+          setTimeline,
+          entries,
+          excludeEventAfterThunderboltLoaded
+        )
       );
-      setCurrentExcludeEventAfterThunderboltLoaded(excludeEventAfterThunderboltLoaded)
+      setCurrentExcludeEventAfterThunderboltLoaded(
+        excludeEventAfterThunderboltLoaded
+      );
       setCurrentFilters(filters);
     }
   }, [entries, filters, google, excludeEventAfterThunderboltLoaded, timeline]);
@@ -25,15 +47,21 @@ function PerformanceTimeline({ google, filters, entries, excludeEventAfterThunde
 
 export default PerformanceTimeline;
 
-const getPerformanceObject = async (filters, entries,excludeEventAfterThunderboltLoaded) => {
+const getPerformanceObject = async (
+  filters,
+  entries,
+  excludeEventAfterThunderboltLoaded
+) => {
   const data = entries;
-  let retList = [];
+  const retList = [];
   filters = filters.map((filter) => filter.name);
-  let thunderboltLoadedTime=25000 //JUST A DEFAULT TIME, COULD BE ANYTHING LARGE ENOUGH
-  for(const entry of data ){
-
-    if(excludeEventAfterThunderboltLoaded && thunderboltLoadedTime<entry.startTime){
-      continue
+  let thunderboltLoadedTime = 25000; // JUST A DEFAULT TIME, COULD BE ANYTHING LARGE ENOUGH
+  for (const entry of data) {
+    if (
+      excludeEventAfterThunderboltLoaded &&
+      thunderboltLoadedTime < entry.startTime
+    ) {
+      continue;
     }
 
     if (filterEntries(entry, filters)) {
@@ -54,14 +82,18 @@ const getPerformanceObject = async (filters, entries,excludeEventAfterThunderbol
       }
       const nameEndIndex = getNameEndingIndex(entry.name);
 
-      if(entry.name.endsWith('started')){
+      if (entry.name.endsWith("started")) {
         retEntry.starts = entry.startTime;
         retEntry.ends = entry.startTime;
       }
+      console.log(entry.worker);
       retEntry.name = entry.name.slice(nameStartIndex, nameEndIndex + 1);
 
-      if(retEntry.name==='thunderbolt app-loaded' || retEntry.name.includes('(beat 33)')){
-        thunderboltLoadedTime=retEntry.starts
+      if (
+        retEntry.name === "thunderbolt app-loaded" ||
+        retEntry.name.includes("(beat 33)")
+      ) {
+        thunderboltLoadedTime = retEntry.starts + 1;
       }
 
       let found = false;
@@ -73,9 +105,11 @@ const getPerformanceObject = async (filters, entries,excludeEventAfterThunderbol
         }
       });
       if (!found) {
-        retEntry.displayName = entry.name.startsWith("http")
-          ? getDisplayNameOfLoadedResource(entry.name)
-          : entry.name.slice(nameStartIndex, nameEndIndex + 1);
+        retEntry.displayName =
+          (entry.name.startsWith("http")
+            ? getDisplayNameOfLoadedResource(entry.name)
+            : entry.name.slice(nameStartIndex, nameEndIndex + 1)) +
+          (entry.worker ? "(worker)- " : "");
         retList.push(retEntry);
       }
     }
@@ -83,7 +117,7 @@ const getPerformanceObject = async (filters, entries,excludeEventAfterThunderbol
   return retList;
 };
 
-const getNameEndingIndex=(name)=>{
+const getNameEndingIndex = (name) => {
   if (name.endsWith("started")) {
     return name.indexOf(" started");
   } else if (name.endsWith("finished")) {
@@ -91,15 +125,25 @@ const getNameEndingIndex=(name)=>{
   } else if (name.endsWith("ended")) {
     return name.indexOf(" ended");
   }
-  return name.length-1
-}
+  return name.length - 1;
+};
 
-
-const drawChart = async (filters, google, setTimeline, entries,excludeEventAfterThunderboltLoaded) => {
+const drawChart = async (
+  filters,
+  google,
+  setTimeline,
+  entries,
+  excludeEventAfterThunderboltLoaded
+) => {
   const container = document.getElementById("timeline");
   const newChart = new google.visualization.Timeline(container);
   const dataTable = new google.visualization.DataTable();
-  const data = await getPerformanceObject(filters, entries,excludeEventAfterThunderboltLoaded);
+  google.visualization.events.addListener(dataTable, 'select', selectHandler);
+  const data = await getPerformanceObject(
+    filters,
+    entries,
+    excludeEventAfterThunderboltLoaded
+  );
   dataTable.addColumn({ type: "string", id: "row label" });
   dataTable.addColumn({ type: "string", id: "bar label" });
   dataTable.addColumn({ type: "string", role: "tooltip" });
@@ -127,9 +171,21 @@ const drawChart = async (filters, google, setTimeline, entries,excludeEventAfter
   const options = {
     timeline: { colorByRowLabel: true, groupByRowLabel: false },
   };
+
   container.style.height = `${dataTable.getNumberOfRows() * 43.2}px`;
   newChart.draw(dataTable, options);
-  //container.style.height = dataTable.getNumberOfRows() * 15+40;
+  google.visualization.events.addListener(newChart, 'select', selectHandler);
+
+  function selectHandler() {
+    const selectedEntry = data[newChart.getSelection()[0].row];
+    if (selectedEntry.name.startsWith('http')) {
+      window.open(selectedEntry.name, '_blank');
+    } else {
+      console.log(selectedEntry);
+    }
+  }
+
+
   setTimeline(newChart);
 };
 
@@ -140,8 +196,11 @@ const getDisplayNameOfLoadedResource = (name) => {
     return `Site Assets (${name.slice(start, end)})`;
   } else if (name.endsWith(".js") || name.endsWith("dynamicmodel")) {
     let fileSuffixIndex = -1;
-    for (let i = 0; i < name.length; i++)
-      if (name[i] === "/") fileSuffixIndex = i;
+    for (let i = 0; i < name.length; i++) {
+      if (name[i] === "/") {
+        fileSuffixIndex = i;
+      }
+    }
 
     return name.slice(fileSuffixIndex + 1, name.length);
   }
@@ -162,3 +221,4 @@ const filterEntries = (entry, filters) => {
       (!filters.includes("cloudflare") && !entry.name.includes("cloudflare")))
   );
 };
+

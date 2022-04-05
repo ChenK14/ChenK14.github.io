@@ -2,7 +2,7 @@ import "./App.css";
 import useGoogleCharts from "./useGoogleCharts";
 import PerformanceTimeline from "./PerformanceTimeline";
 import { Multiselect } from "multiselect-react-dropdown";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import CollapsableSection from "./CollapsableSection";
 
 const App = ({ entries }) => {
@@ -44,7 +44,7 @@ const App = ({ entries }) => {
   const [filters, setFilters] = useState(
     types.filter((filter) => filter.id !== 7 && filter.id !== 8)
   );
-  const [excludeEventsAfterThunderboltLoaded, setExcludeEventsAfterThunderboltLoaded] = useState(false);
+  const [excludeEventAfterThunderboltLoaded, setExcludeEventAfterThunderboltLoaded] = useState(true);
 
   const onSelect = (selectedList, _selectedItem) => {
     setFilters(selectedList);
@@ -71,8 +71,8 @@ const App = ({ entries }) => {
         <input
           className='basic_components'
           type="checkbox"
-          onChange={(event) => setExcludeEventsAfterThunderboltLoaded(event.currentTarget.checked)}
-          checked={excludeEventsAfterThunderboltLoaded}
+          onChange={(event) => setExcludeEventAfterThunderboltLoaded(event.currentTarget.checked)}
+          checked={excludeEventAfterThunderboltLoaded}
         /> Exclude Events After Thunderbolt Loaded
       </div>
       <Multiselect
@@ -93,7 +93,7 @@ const App = ({ entries }) => {
           google={google}
           filters={filters}
           entries={entries}
-          excludeEventAfterThunderboltLoaded={excludeEventsAfterThunderboltLoaded}
+          excludeEventAfterThunderboltLoaded={excludeEventAfterThunderboltLoaded}
         />
       </div>
     </>
