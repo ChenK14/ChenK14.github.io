@@ -109,7 +109,7 @@ const getPerformanceObject = async (
           (entry.name.startsWith("http")
             ? getDisplayNameOfLoadedResource(entry.name)
             : entry.name.slice(nameStartIndex, nameEndIndex + 1)) +
-          (entry.worker ? "(worker)- " : "");
+          (entry.worker ? " (worker)- " : "");
         retList.push(retEntry);
       }
     }
